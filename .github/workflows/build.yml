@@ -14,6 +14,7 @@ on:
       - "cori_verify.py"
       - "carry_music.py"
       - "horror_upgrade.py"
+      - "next_upgrade.py"
 
 permissions:
   contents: read

@@ -15,7 +15,7 @@ client = (root / "client/FromTheHorrorClient.java").read_text(encoding="utf-8")
 assert "COUNTDOWN_DAYS = 5" in manager
 assert "day >= st.madDay + COUNTDOWN_DAYS && w.isNight()" in manager
 assert "EntityDimensions.fixed(3.2f, 4.8f)" in entity
-assert "this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(18.0)" in entity
+assert "this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(26.0)" in entity
 assert "CORISANDE_MONSTER" in main and 'literal("monster")' in main and 'literal("corisande_monster")' in main
 assert "egg(\"corisande_monster\", CORISANDE_MONSTER" in main
 assert "EntityRendererRegistry.register(FromTheHorror.CORISANDE_MONSTER, CorisandeRenderer::new)" in client

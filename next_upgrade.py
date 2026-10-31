@@ -38,7 +38,7 @@ p=r/"FromTheHorror.java";s=p.read_text()
 s=s.replace('.then(CommandManager.literal("monster").executes(c -> {','.then(CommandManager.literal("monster").requires(src -> src.hasPermissionLevel(2)).executes(c -> {')
 s=s.replace('.then(CommandManager.literal("corisande_monster").executes(c -> {','.then(CommandManager.literal("corisande_monster").requires(src -> src.hasPermissionLevel(2)).executes(c -> {');p.write_text(s)
 p=r/"CorisandeEntity.java";s=p.read_text()
-s=s.replace("import net.minecraft.world.World;","import net.minecraft.world.World;\nimport net.minecraft.world.GameRules;\nimport net.minecraft.block.Blocks;")
+s=s.replace("import net.minecraft.world.World;","import net.minecraft.world.World;\nimport net.minecraft.world.GameRules;\nimport net.minecraft.block.Blocks;\nimport net.minecraft.util.math.BlockPos;")
 s=s.replace("            this.getNavigation().startMovingTo(p.getX(), p.getY() + 1.8, p.getZ(), 2.35);","            this.getNavigation().startMovingTo(p.getX(), p.getY() + 1.8, p.getZ(), 2.35);\n            if (this.age % 5 == 0) breakObstruction((ServerWorld) w, p);")
 anchor="    @Override\n    public boolean damage(DamageSource source, float amount) {"
 method="""    private void breakObstruction(ServerWorld world, PlayerEntity target) {

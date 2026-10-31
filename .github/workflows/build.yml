@@ -16,6 +16,7 @@ on:
       - "carry_music.py"
       - "horror_upgrade.py"
       - "next_upgrade.py"
+      - "final_fixes.py"
 
 permissions:
   contents: read
@@ -64,6 +65,7 @@ jobs:
           python3 ../carry_music.py
           python3 ../horror_upgrade.py
           python3 ../cori_verify.py
+          python3 ../final_fixes.py
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

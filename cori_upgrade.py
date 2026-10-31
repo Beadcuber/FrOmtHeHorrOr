@@ -150,6 +150,14 @@ s = s.replace("You can only claim knowledge supported by these live facts. You c
               "You can only claim knowledge supported by these live facts. You can summon hostile mobs only when the player explicitly asks. Never run, suggest executing, or claim to execute Minecraft commands. Never change gamemode, permissions, or operator status. Be emotionally expressive, remember conversational context, and answer the player's actual question.", 1)
 p.write_text(s, encoding="utf-8")
 
+# Keep the optional free-form AI personality from ever claiming to run commands.
+p = root / "CorisandeManager.java"
+s = p.read_text(encoding="utf-8")
+old = "You can only claim knowledge supported by these live facts. You can summon hostile mobs only when the player explicitly asks."
+new = old + " Never run, suggest executing, or claim to execute Minecraft commands. Never change gamemode, permissions, or operator status. Be emotionally expressive, remember conversational context, and answer the player's actual question."
+if old not in s: raise SystemExit("Missing Corisande AI system prompt")
+p.write_text(s.replace(old, new, 1), encoding="utf-8")
+
 # Spawn-egg item model and localized name.
 resources = Path("src/main/resources/assets/fromthehorror")
 models = resources / "models/item"

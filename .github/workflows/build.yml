@@ -17,6 +17,7 @@ on:
       - "horror_upgrade.py"
       - "next_upgrade.py"
       - "final_fixes.py"
+      - "voice_fix.py"
 
 permissions:
   contents: read
@@ -27,20 +28,16 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-
       - name: Extract source archive
         shell: bash
         run: |
           mkdir -p extracted
           unzip -q "FromTheHorror (1).zip" -d extracted
-          echo "Archive contents:"
-          find extracted -maxdepth 4 -type f | sort | head -200
           PROJECT_FILE="$(find extracted -type f | grep -E '/(gradlew|build.gradle|build.gradle.kts)$' | head -n 1)"
           if [ -z "$PROJECT_FILE" ]; then
             echo "::error::No Gradle build file or gradlew was found inside the ZIP."
@@ -49,10 +46,8 @@ jobs:
           PROJECT_DIR="$(dirname "$PROJECT_FILE")"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
           echo "Using project directory: $PROJECT_DIR"
-
       - name: Install audio encoder and texture tooling
         run: sudo apt-get update && sudo apt-get install -y ffmpeg python3-pil
-
       - name: Apply requested gameplay changes
         shell: bash
         run: |
@@ -66,12 +61,11 @@ jobs:
           python3 ../horror_upgrade.py
           python3 ../cori_verify.py
           python3 ../final_fixes.py
-
+          python3 ../voice_fix.py
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.5"
-
       - name: Build mod
         shell: bash
         run: |
@@ -83,7 +77,6 @@ jobs:
             gradle clean build --no-daemon
           fi
           python3 ../cori_verify.py --jar "$(find build/libs -name '*.jar' | head -n 1)"
-
       - name: Upload built JARs
         uses: actions/upload-artifact@v4
         with:
@@ -91,7 +84,6 @@ jobs:
           path: ${{ env.PROJECT_DIR }}/build/libs/*.jar
           if-no-files-found: error
           retention-days: 14
-
       - name: Upload editable source
         uses: actions/upload-artifact@v4
         with:

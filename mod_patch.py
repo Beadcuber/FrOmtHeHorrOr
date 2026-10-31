@@ -18,7 +18,7 @@ replace("CorisandeManager.java", "st.madDay + 14)", "st.madDay + COUNTDOWN_DAYS)
 replace("CorisandeManager.java", ' : 14;', ' : COUNTDOWN_DAYS;')
 replace("CorisandeManager.java", '"Something is coming in 14 days, "', '"Something is coming in " + COUNTDOWN_DAYS + " days, "')
 replace("CorisandeManager.java", 'told the player something is coming in 14 days.', 'told the player something is coming in 5 days.')
-replace("CorisandeManager.java", 'bump(p, st, 30, "You shouldn\\'t have hit me.")', 'bump(p, st, 12, "You shouldn\\'t have hit me.")')
+replace("CorisandeManager.java", 'bump(p, st, 30, ', 'bump(p, st, 12, ')
 replace("CorisandeManager.java", '"Fourteen days. I told you something was coming."', '"Five days. I told you something was coming."')
 replace("CorisandeManager.java", "if (st.anger >= 55) return 3;", "if (st.anger >= 75) return 3;")
 replace("CorisandeManager.java", "if (st.anger >= 35) return 2;", "if (st.anger >= 50) return 2;")
@@ -27,7 +27,7 @@ replace("CorisandeManager.java", "st.anger >= 35 ? 1 : 0", "st.anger >= 50 ? 1 :
 replace("CorisandeManager.java", "else if (st.anger >= 35) mood =", "else if (st.anger >= 50) mood =")
 
 # Corisande takes longer to become angry: fewer points per insult/hit and more patience around gifts.
-replace("CorisandeBrain.java", '"Fourteen days, and now it\\'s time."', '"Five days, and now it\\'s time."')
+replace("CorisandeBrain.java", "Fourteen days, and now it's time.", "Five days, and now it's time.")
 replace("CorisandeBrain.java", "st.madDay + 14 - day", "st.madDay + CorisandeManager.COUNTDOWN_DAYS - day")
 replace("CorisandeBrain.java", " : 14;", " : CorisandeManager.COUNTDOWN_DAYS;")
 replace("CorisandeBrain.java", "st.anger >= 35 ? 1 : 0", "st.anger >= 50 ? 1 : 0")

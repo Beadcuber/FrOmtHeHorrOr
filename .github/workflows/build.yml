@@ -62,3 +62,11 @@ jobs:
           path: ${{ env.PROJECT_DIR }}/build/libs/*.jar
           if-no-files-found: error
           retention-days: 14
+
+      - name: Upload editable source
+        uses: actions/upload-artifact@v4
+        with:
+          name: FromTheHorror-source
+          path: ${{ env.PROJECT_DIR }}/
+          if-no-files-found: error
+          retention-days: 14

@@ -46,4 +46,15 @@ for src,dst in [("dweller.png","lurker.png"),("watcher.png","mimic.png"),("man_f
 
 """
 f.write_text(t[:a]+texture_patch+t[b:],encoding="utf-8")
+# Spawn egg models need explicit item-model parents on Minecraft 1.20.1.
+f=Path("finish_mobs.py")
+t=f.read_text(encoding="utf-8")
+anchor='print("Registered and rendered The Lurker, The Mimic, and The Screecher; added spawn eggs, commands, textures, and natural encounters.")'
+extra="""models = project / "src/main/resources/assets/fromthehorror/models/item"
+models.mkdir(parents=True, exist_ok=True)
+for mob in ("lurker", "mimic", "screecher"):
+    (models / (mob + "_spawn_egg.json")).write_text('{ "parent": "minecraft:item/template_spawn_egg" }\\n', encoding="utf-8")
+"""
+if anchor not in t: raise SystemExit("Missing finish script completion marker")
+f.write_text(t.replace(anchor,extra+anchor,1),encoding="utf-8")
 print("Updated natural spawning and removed the Pillow dependency from texture setup.")

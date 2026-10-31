@@ -408,3 +408,7 @@ replace("CorisandeEntity.java", "this.getAttributeInstance(EntityAttributes.GENE
 replace("CorisandeEntity.java", "this.getNavigation().startMovingTo(p.getX(), p.getY() + 0.8, p.getZ(), 1.4);", "this.getNavigation().startMovingTo(p.getX(), p.getY() + 1.8, p.getZ(), 1.65);")
 replace("client/CorisandeRenderer.java", "float s = e.isHostile() ? 2.6f : 1.3f;\n        m.scale(s, s, s);", "if (e.isHostile()) m.scale(4.6f, 4.6f, 4.6f);\n        else m.scale(1.3f, 1.3f, 1.3f);")
 replace("CorisandeManager.java", '"Five days. I told you something was coming."', '"The fifth day is over. Day and night, five times. Now you see what I really am."')
+
+import shutil
+shared = Path(__file__).parent / "src/main/java/com/fromthehorror/HorrorMobEntity.java"
+shutil.copyfile(shared, root / "HorrorMobEntity.java")

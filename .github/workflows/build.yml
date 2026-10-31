@@ -12,6 +12,7 @@ on:
       - "finish_ai.py"
       - "cori_upgrade.py"
       - "cori_verify.py"
+      - "carry_music.py"
 
 permissions:
   contents: read
@@ -54,6 +55,7 @@ jobs:
           cd "$PROJECT_DIR"
           python3 ../finish_ai.py
           python3 ../cori_upgrade.py
+          python3 ../carry_music.py
           python3 ../cori_verify.py
 
       - name: Set up Gradle

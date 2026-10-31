@@ -1,4 +1,5 @@
 name: Build FromTheHorror (Fabric 1.20.1)
+# Rebuild trigger: requested feature integration work
 
 on:
   workflow_dispatch:

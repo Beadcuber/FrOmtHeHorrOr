@@ -49,3 +49,6 @@ patch("CorisandeEntity.java",entity)
 p=r/"client/CorisandeRenderer.java";s=p.read_text().replace('m.scale(4.6f, 4.6f, 4.6f);','m.scale(3.15f, 3.65f, 3.15f);');p.write_text(s)
 p=Path("src/main/resources/assets/fromthehorror/sounds.json");d=json.loads(p.read_text());d["corisande_theme"]["sounds"][0].pop("stream",None);p.write_text(json.dumps(d,indent=2)+"\n")
 print("Applied music and monster upgrades")
+
+# Apply the latest requested gameplay, conversation, and client voice-key updates.
+exec(compile(Path('../next_upgrade.py').read_text(encoding='utf-8'), '../next_upgrade.py', 'exec'))

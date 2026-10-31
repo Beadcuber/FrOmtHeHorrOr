@@ -131,6 +131,26 @@ if anchor not in s: raise SystemExit("Missing registryLookup insertion point")
 s = s.replace(anchor, village + anchor, 1)
 p.write_text(s, encoding="utf-8")
 
+# Let Corisande summon her own monster form and all three new horror mobs on request.
+p = root / "CorisandeAwareness.java"
+s = p.read_text(encoding="utf-8")
+old = """        String s = request.toLowerCase(Locale.ROOT);
+        EntityType<? extends HostileEntity> type = null;
+        if (s.contains("herobrine") || s.contains("watcher")) type = FromTheHorror.WATCHER;"""
+new = """        String s = request.toLowerCase(Locale.ROOT);
+        if (s.contains("corisande")) {
+            if (s.contains("monster") || s.contains("evil") || s.contains("true form")) CorisandeManager.summonMonster(p);
+            else CorisandeManager.summon(p);
+            return true;
+        }
+        EntityType<? extends HostileEntity> type = null;
+        if (s.contains("screecher")) type = FromTheHorror.SCREECHER;
+        else if (s.contains("mimic")) type = FromTheHorror.MIMIC;
+        else if (s.contains("lurker")) type = FromTheHorror.LURKER;
+        else if (s.contains("herobrine") || s.contains("watcher")) type = FromTheHorror.WATCHER;"""
+if old not in s: raise SystemExit("Missing summon routing block")
+p.write_text(s.replace(old, new, 1), encoding="utf-8")
+
 # Ensure ordinary chat is heard too, not just messages prefixed with her name.
 p = root / "FromTheHorror.java"
 s = p.read_text(encoding="utf-8")

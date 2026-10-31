@@ -406,5 +406,5 @@ replace("CorisandeEntity.java", "return isHostile() ? EntityDimensions.fixed(1.6
 replace("CorisandeEntity.java", ".add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)", ".add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 18.0)")
 replace("CorisandeEntity.java", "this.getAttributeInstance(EntityAttributes.GENERIC_FLYING_SPEED).setBaseValue(0.75);", "this.getAttributeInstance(EntityAttributes.GENERIC_FLYING_SPEED).setBaseValue(0.95);\n        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.48);\n        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(18.0);")
 replace("CorisandeEntity.java", "this.getNavigation().startMovingTo(p.getX(), p.getY() + 0.8, p.getZ(), 1.4);", "this.getNavigation().startMovingTo(p.getX(), p.getY() + 1.8, p.getZ(), 1.65);")
-replace("CorisandeRenderer.java", "float s = e.isHostile() ? 2.6f : 1.3f;\n        m.scale(s, s, s);", "if (e.isHostile()) m.scale(4.6f, 4.6f, 4.6f);\n        else m.scale(1.3f, 1.3f, 1.3f);")
+replace("client/CorisandeRenderer.java", "float s = e.isHostile() ? 2.6f : 1.3f;\n        m.scale(s, s, s);", "if (e.isHostile()) m.scale(4.6f, 4.6f, 4.6f);\n        else m.scale(1.3f, 1.3f, 1.3f);")
 replace("CorisandeManager.java", '"Five days. I told you something was coming."', '"The fifth day is over. Day and night, five times. Now you see what I really am."')

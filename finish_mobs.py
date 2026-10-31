@@ -288,3 +288,15 @@ s=s.replace("        if (st.warned && !st.turned && day >= st.madDay + COUNTDOWN
 p.write_text(s)
 p=j/"FromTheHorror.java"; s=p.read_text().replace("        ServerTickEvents.END_WORLD_TICK.register(DreadDirector::tick);","        ServerTickEvents.END_WORLD_TICK.register(DreadDirector::tick);\n        NaturalStructures.register();"); p.write_text(s)
 print("Integrated 10 total added monsters, two natural structures, and four mood advancements.")
+
+# Distribute all ten new monster variants into the natural encounter table.
+dp=j/"DreadDirector.java"; ds=dp.read_text()
+ds=ds.replace("else if (roll < 85) spawn(w, p, FromTheHorror.MAN, 28, 42);", """else if (roll < 78) spawn(w, p, FromTheHorror.MAN, 28, 42);
+            else if (roll < 81) spawn(w, p, FromTheHorror.HOLLOW, 28, 42);
+            else if (roll < 84) spawn(w, p, FromTheHorror.STALKER, 28, 42);
+            else if (roll < 87) spawn(w, p, FromTheHorror.GRINNER, 28, 42);
+            else if (roll < 90) spawn(w, p, FromTheHorror.PALE_ONE, 28, 42);
+            else if (roll < 93) spawn(w, p, FromTheHorror.CRAWLER, 28, 42);
+            else if (roll < 96) spawn(w, p, FromTheHorror.SIREN, 28, 42);
+            else spawn(w, p, FromTheHorror.RAVEN, 28, 42);""")
+dp.write_text(ds)

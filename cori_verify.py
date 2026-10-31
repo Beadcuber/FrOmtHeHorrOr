@@ -23,6 +23,16 @@ assert "locateStructure(StructureTags.VILLAGE" in awareness
 assert "nearestVillage(p, w)" in brain
 assert "CorisandeManager.chat(sender, raw, true)" in main
 assert "advancedArmor" in items and "advancedPickaxe" in items and 'p.equals("enchanted_golden_apple")' in items
+# Mirror the explicit item policy for edge cases.
+def gift_blocked(path):
+    armor = path.endswith(("_helmet", "_chestplate", "_leggings", "_boots")) and (path.startswith(("golden_", "diamond_", "netherite_")) or path == "turtle_helmet")
+    pick = path in {"golden_pickaxe", "diamond_pickaxe", "netherite_pickaxe"}
+    tool = path.endswith(("_sword", "_axe", "_shovel", "_hoe")) and path.startswith(("golden_", "diamond_", "netherite_"))
+    return armor or pick or tool or path == "enchanted_golden_apple"
+assert not gift_blocked("iron_helmet") and not gift_blocked("iron_pickaxe")
+assert gift_blocked("golden_helmet") and gift_blocked("diamond_chestplate")
+assert gift_blocked("golden_pickaxe") and gift_blocked("netherite_pickaxe")
+assert not gift_blocked("golden_apple") and gift_blocked("enchanted_golden_apple")
 assert 'never run' in (manager + brain).lower() or 'Never run' in (manager + brain)
 assert 'CommandManager.literal("gamemode")' not in main
 

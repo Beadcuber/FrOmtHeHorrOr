@@ -129,6 +129,8 @@ public class CorisandeCarryItem extends Item {
 }
 """)
 p=r/"CorisandeEntity.java";s=p.read_text()
+s=s.replace("import net.minecraft.item.ItemStack;","import net.minecraft.item.ItemStack;")
+if "import net.minecraft.item.ItemStack;" not in s: s=s.replace("import net.minecraft.nbt.NbtCompound;","import net.minecraft.nbt.NbtCompound;\nimport net.minecraft.item.ItemStack;")
 old="""    /** Right-click the friendly orb with an empty hand to carry her; sneak to put her down. */
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {

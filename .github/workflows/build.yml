@@ -7,6 +7,8 @@ on:
       - ".github/workflows/build.yml"
       - "FromTheHorror (1).zip"
       - "mod_patch.py"
+      - "finish_mobs.py"
+      - "fix_mobs_patch.py"
 
 permissions:
   contents: read
@@ -42,7 +44,10 @@ jobs:
 
       - name: Apply requested gameplay changes
         shell: bash
-        run: python3 mod_patch.py "$PROJECT_DIR"
+        run: |
+          python3 mod_patch.py "$PROJECT_DIR"
+          python3 fix_mobs_patch.py
+          python3 finish_mobs.py "$PROJECT_DIR"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

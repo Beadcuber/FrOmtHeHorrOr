@@ -12,7 +12,7 @@ items = read("ItemRequests.java")
 awareness = read("CorisandeAwareness.java")
 client = (root / "client/FromTheHorrorClient.java").read_text(encoding="utf-8")
 
-assert "COUNTDOWN_DAYS = 5" in manager
+assert "COUNTDOWN_DAYS = 3" in manager
 assert "day >= st.madDay + COUNTDOWN_DAYS && w.isNight()" in manager
 assert "EntityDimensions.fixed(3.2f, 4.8f)" in entity
 assert "this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(26.0)" in entity
@@ -43,15 +43,15 @@ assert 'CommandManager.literal("gamemode")' not in main
 def transforms(time_of_day, warned_day):
     day = time_of_day // 24000
     phase = time_of_day % 24000
-    return day >= warned_day + 5 and 13000 <= phase < 23000
+    return day >= warned_day + 3 and 13000 <= phase < 23000
 
 assert not transforms(100 * 24000 + 14000, 100)   # first night
-assert not transforms(104 * 24000 + 14000, 100)   # fourth night
-assert not transforms(105 * 24000 + 1000, 100)    # fifth dawn
-assert not transforms(105 * 24000 + 8000, 100)    # fifth afternoon
-assert transforms(105 * 24000 + 14000, 100)       # fifth night
-assert not transforms(106 * 24000 + 1000, 100)    # missed/skipped night waits
-assert transforms(106 * 24000 + 14000, 100)       # next night
+assert not transforms(102 * 24000 + 14000, 100)   # third night
+assert not transforms(103 * 24000 + 1000, 100)    # dawn after three cycles
+assert not transforms(103 * 24000 + 8000, 100)    # afternoon after three cycles
+assert transforms(103 * 24000 + 14000, 100)       # third night
+assert not transforms(104 * 24000 + 1000, 100)    # missed/skipped night waits
+assert transforms(104 * 24000 + 14000, 100)       # next night
 
 if "--jar" in sys.argv:
     jar_path = Path(sys.argv[sys.argv.index("--jar") + 1])
@@ -68,4 +68,4 @@ if "--jar" in sys.argv:
         missing = required - names
         assert not missing, "Missing compiled JAR entries: " + ", ".join(sorted(missing))
         assert jar.testzip() is None, "Corrupt JAR entry found"
-print("PASS: five-cycle/night timing, monster form, summon command/egg/renderer, village lookup, all-chat replies, iron-tier gift restrictions, and JAR integrity.")
+print("PASS: three-cycle/night timing, monster form, summon command/egg/renderer, village lookup, all-chat replies, iron-tier gift restrictions, and JAR integrity.")

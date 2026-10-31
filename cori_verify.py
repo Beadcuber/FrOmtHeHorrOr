@@ -20,6 +20,8 @@ assert "CORISANDE_MONSTER" in main and 'literal("monster")' in main and 'literal
 assert "egg(\"corisande_monster\", CORISANDE_MONSTER" in main
 assert "EntityRendererRegistry.register(FromTheHorror.CORISANDE_MONSTER, CorisandeRenderer::new)" in client
 assert "locateStructure(StructureTags.VILLAGE" in awareness
+assert 's.contains("screecher")' in awareness and 's.contains("mimic")' in awareness and 's.contains("lurker")' in awareness
+assert 'CorisandeManager.summonMonster(p)' in awareness
 assert "nearestVillage(p, w)" in brain
 assert "CorisandeManager.chat(sender, raw, true)" in main
 assert "advancedArmor" in items and "advancedPickaxe" in items and 'p.equals("enchanted_golden_apple")' in items

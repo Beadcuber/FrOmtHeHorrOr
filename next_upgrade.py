@@ -55,7 +55,7 @@ method="""    private void breakObstruction(ServerWorld world, PlayerEntity targ
 
 """
 s=s.replace(anchor,method+anchor);p.write_text(s)
-p=r/"DreadDirector.java";s=p.read_text().replace("900 + R.nextInt(900)","240 + R.nextInt(360)").replace("!w.isSkyVisible(pos) && pos.getY() < 56","!w.isSkyVisible(pos) && pos.getY() < 80").replace("if (roll < 42) spawn(w, p, FromTheHorror.DWELLER, 24, 38);","if (roll < 78) spawn(w, p, FromTheHorror.DWELLER, 18, 32)");p.write_text(s)
+p=r/"DreadDirector.java";s=p.read_text().replace("900 + R.nextInt(900)","240 + R.nextInt(360)").replace("!w.isSkyVisible(pos) && pos.getY() < 56","!w.isSkyVisible(pos) && pos.getY() < 80").replace("if (roll < 42) spawn(w, p, FromTheHorror.DWELLER, 24, 38);","if (roll < 78) spawn(w, p, FromTheHorror.DWELLER, 18, 32);");p.write_text(s)
 p=r/"client/CorisandeRenderer.java";s=p.read_text()
 s=s.replace("    private static final Identifier[] FACES = new Identifier[5];","    private static final Identifier[] FACES = new Identifier[5];\n    private static final Identifier BLANK = new Identifier(FromTheHorror.ID, \"textures/entity/corisande_blank.png\");")
 s=s.replace("    public Identifier getTexture(CorisandeEntity e) {\n        return FACES","    public Identifier getTexture(CorisandeEntity e) {\n        if (e.isHostile()) return BLANK;\n        return FACES");p.write_text(s)

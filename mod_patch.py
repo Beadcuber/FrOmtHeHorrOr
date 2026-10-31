@@ -305,3 +305,5 @@ replace("FromTheHorror.java", "        ServerTickEvents.END_WORLD_TICK.register(
         });
 
         ServerTickEvents.END_WORLD_TICK.register(DreadDirector::tick);""")
+
+# Next patch section: new cave encounter and atmospheric horror systems.

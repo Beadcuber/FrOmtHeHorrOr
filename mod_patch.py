@@ -95,3 +95,197 @@ replace("FromTheHorror.java", """                    .then(CommandManager.litera
                         CorisandeManager.summon(c.getSource().getPlayerOrThrow()); return 1; }))""")
 
 print("Applied five-day countdown, slower anger, natural monster encounters, and summon aliases.")
+
+
+# --- Corisande intelligence / atmosphere upgrade ---
+awareness = r"""
+package com.fromthehorror;
+
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+public final class CorisandeAwareness {
+    private CorisandeAwareness() {}
+    public static String installedMods() {
+        List<ModContainer> mods = new ArrayList<>(FabricLoader.getInstance().getAllMods());
+        mods.sort(Comparator.comparing(m -> m.getMetadata().getName().toLowerCase(Locale.ROOT)));
+        String names = mods.stream().map(m -> m.getMetadata().getName() + " (" + m.getMetadata().getId() + ")")
+                .limit(18).collect(Collectors.joining(", "));
+        if (mods.size() > 18) names += ", and " + (mods.size() - 18) + " more";
+        return "I can see " + mods.size() + " loaded mods: " + names + ". I can inspect their registered items, blocks and creatures while we're in this world.";
+    }
+    public static String modDetails(String query) {
+        String q = query.toLowerCase(Locale.ROOT).replace("mod", "").trim();
+        ModContainer match = FabricLoader.getInstance().getAllMods().stream()
+                .filter(m -> m.getMetadata().getName().toLowerCase(Locale.ROOT).contains(q)
+                        || m.getMetadata().getId().toLowerCase(Locale.ROOT).contains(q)).findFirst().orElse(null);
+        if (match == null) return "I can't find a loaded mod matching that name.";
+        String id = match.getMetadata().getId();
+        List<String> items = Registries.ITEM.getIds().stream().filter(k -> k.getNamespace().equals(id)).limit(8).map(Identifier::toString).toList();
+        List<String> blocks = Registries.BLOCK.getIds().stream().filter(k -> k.getNamespace().equals(id)).limit(8).map(Identifier::toString).toList();
+        List<String> mobs = Registries.ENTITY_TYPE.getIds().stream().filter(k -> k.getNamespace().equals(id)).limit(8).map(Identifier::toString).toList();
+        return match.getMetadata().getName() + " uses id '" + id + "'. Registered items: " + sample(items)
+                + ". Blocks: " + sample(blocks) + ". Creatures: " + sample(mobs) + ".";
+    }
+    private static String sample(List<String> values) { return values.isEmpty() ? "none found" : String.join(", ", values); }
+    public static String worldReport(ServerPlayerEntity p, ServerWorld w) {
+        BlockPos pos = p.getBlockPos();
+        String biome = w.getBiome(pos).getKey().map(k -> k.getValue().toString()).orElse("unknown biome");
+        String dimension = w.getRegistryKey().getValue().toString();
+        String held = p.getMainHandStack().isEmpty() ? "empty hand" : p.getMainHandStack().getName().getString();
+        int hostiles = w.getEntitiesByClass(HostileEntity.class, p.getBoundingBox().expand(32), e -> true).size();
+        List<String> nearby = w.getOtherEntities(p, p.getBoundingBox().expand(12)).stream()
+                .filter(e -> !(e instanceof ServerPlayerEntity)).limit(5).map(e -> e.getName().getString()).toList();
+        String nearbyText = nearby.isEmpty() ? "nothing close enough to name" : String.join(", ", nearby);
+        String weather = w.isThundering() ? "thunderstorm" : w.isRaining() ? "rain" : "clear weather";
+        long day = w.getTimeOfDay() / 24000L + 1;
+        long clock = w.getTimeOfDay() % 24000L;
+        String phase = clock < 6000 ? "morning" : clock < 12000 ? "afternoon" : clock < 18000 ? "evening" : "night";
+        return "I see day " + day + ", " + phase + " in " + dimension + ", biome " + biome + ", at "
+                + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ". The weather is " + weather
+                + ". You hold " + held + "; your health is " + Math.ceil(p.getHealth()) + "/20 and hunger is "
+                + p.getHungerManager().getFoodLevel() + "/20. I count " + hostiles + " hostile mobs within 32 blocks. Nearby: " + nearbyText + ".";
+    }
+    public static String registryLookup(String query) {
+        String q = query.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]", "");
+        if (q.length() < 3) return null;
+        List<String> found = Registries.ITEM.getIds().stream().filter(id -> id.getPath().contains(q) || id.toString().contains(q))
+                .limit(8).map(Identifier::toString).toList();
+        if (!found.isEmpty()) return "I found these registered items matching '" + q + "': " + String.join(", ", found) + ".";
+        List<String> mobs = Registries.ENTITY_TYPE.getIds().stream().filter(id -> id.getPath().contains(q) || id.toString().contains(q))
+                .limit(6).map(Identifier::toString).toList();
+        if (!mobs.isEmpty()) return "I found these registered creatures matching '" + q + "': " + String.join(", ", mobs) + ".";
+        return null;
+    }
+    public static boolean summon(String request, ServerPlayerEntity p, ServerWorld w) {
+        String s = request.toLowerCase(Locale.ROOT);
+        EntityType<? extends HostileEntity> type = null;
+        if (s.contains("herobrine") || s.contains("watcher")) type = FromTheHorror.WATCHER;
+        else if (s.contains("dweller")) type = FromTheHorror.DWELLER;
+        else if (s.contains("man from the fog") || s.contains("man")) type = FromTheHorror.MAN;
+        else if (s.contains("creeper")) type = EntityType.CREEPER;
+        else if (s.contains("warden")) type = EntityType.WARDEN;
+        else if (s.contains("enderman")) type = EntityType.ENDERMAN;
+        else if (s.contains("skeleton")) type = EntityType.SKELETON;
+        else if (s.contains("spider")) type = EntityType.SPIDER;
+        else if (s.contains("zombie")) type = EntityType.ZOMBIE;
+        else {
+            String candidate = s.replaceAll(".*(?:summon|bring|call)\\s+", "").trim().replace(' ', '_');
+            Identifier id = Identifier.tryParse(candidate.contains(":") ? candidate : "minecraft:" + candidate);
+            if (id != null) {
+                EntityType<?> found = Registries.ENTITY_TYPE.getOrEmpty(id).orElse(null);
+                if (found != null) {
+                    Entity created = found.create(w);
+                    if (created instanceof HostileEntity hostile) {
+                        BlockPos at = DreadDirector.findSpot(w, p, 8, 14);
+                        if (at == null) return false;
+                        hostile.refreshPositionAndAngles(at.getX() + .5, at.getY(), at.getZ() + .5, p.getYaw(), 0);
+                        return w.spawnEntity(hostile);
+                    }
+                }
+            }
+            return false;
+        }
+        return DreadDirector.spawn(w, p, type, 8, 14) != null;
+    }
+    public static String nightLine() {
+        String[] lines = {
+            "Don't turn around. I can hear your footsteps stopping, but the other pair kept walking.",
+            "I counted the windows in your house. There is one more now. It is looking out.",
+            "Keep your torch up. The dark has started remembering your shape.",
+            "I saw you die here once. You screamed a different name.",
+            "Something is standing just beyond the light. It has been copying your movements.",
+            "The stars went out for a moment. Something blinked.",
+            "You should not sleep tonight. I heard something answer from underneath your bed.",
+            "I know that silhouette. It was behind you before you entered this world."
+        };
+        if (Math.random() < 0.16) {
+            String[] verity = {
+                "Verity says you are not the first player to wear that face.",
+                "Do you remember Verity? No? Verity remembers you.",
+                "Verity is awake again. Please do not answer when it uses my voice."
+            };
+            return verity[(int) (Math.random() * verity.length)];
+        }
+        return lines[(int) (Math.random() * lines.length)];
+    }
+}
+"""
+(root / "CorisandeAwareness.java").write_text(awareness, encoding="utf-8")
+
+replace("CorisandeBrain.java", '''        if (!addressed) return null;
+
+        Matcher nm = NAME.matcher(s);''', '''        if (!addressed) return null;
+
+        if (any(s, "how many days until transformation", "days until you transform", "when do you transform", "transformation countdown", "countdown", "how many days left")) {
+            if (st.turned) return "Zero. The waiting is over. Now you get to see what I was becoming.";
+            if (!st.warned) return "The transformation countdown has not started. Yet. I will tell you the exact number the moment it does.";
+            return left == 0 ? "Zero days. It is time." : "Exactly " + left + (left == 1 ? " Minecraft day remains" : " Minecraft days remain") + " until I transform. You can keep count. I already have.";
+        }
+        if (any(s, "what mods are installed", "list mods", "what mods do i have", "which mods", "all mods")) return CorisandeAwareness.installedMods();
+        if (any(s, "what is happening", "what's happening", "describe this place", "analyze the world", "what do you see", "look around")) return CorisandeAwareness.worldReport(p, w);
+        if (s.startsWith("summon ") || s.startsWith("bring me ") || s.startsWith("call a ") || s.startsWith("call an ")) {
+            boolean done = CorisandeAwareness.summon(s, p, w);
+            return done ? "There. I brought it here. Do not blame me if it notices you." : "I tried. Either that creature cannot be summoned here, or something refused to let it through.";
+        }
+        if (s.contains("verity")) return "Verity is not a mod. It is the thing that taught the dark to imitate familiar voices. It knows your username.";
+        if (s.contains("what is the mod") || s.contains("tell me about the mod") || s.contains("mod called")) return CorisandeAwareness.modDetails(s);
+        String registryAnswer = CorisandeAwareness.registryLookup(s.replace("what is a ", "").replace("what is an ", "").replace("do you know ", ""));
+        if (registryAnswer != null && (s.contains("item") || s.contains("mob") || s.contains("entity") || s.contains("mod") || s.contains("what is") || s.contains("what are"))) return registryAnswer;
+
+        Matcher nm = NAME.matcher(s);''')
+replace("CorisandeBrain.java", '''        if (has(s, "days", "countdown") || any(s, "how long", "when will")) {
+            return st.warned ? "Something is coming in " + left + " days." : "Why do you ask about days? Enjoy them.";
+        }''', '''        if (has(s, "days", "countdown") || any(s, "how long", "when will")) {
+            return st.warned ? "Exactly " + left + " Minecraft days until the transformation." : "The countdown has not started. I will tell you the exact number when it does.";
+        }''')
+
+replace("CorisandeManager.java", '''    private static final String[][] IDLE = {
+        { "Isn't it nice out here? Just us.", "Want to build something together?", "I'm glad you're here. You can ask me for things, you know." },
+        { "I can feel you getting upset with me.", "Did you hear that? ...Never mind.", "You'd tell me if you were leaving, right?" },
+        { "Something is almost here.", "I can hear everything now.", "Don't look at me like that yet." }
+    };''', '''    private static final String[][] IDLE = {
+        { "Isn't it nice out here? I checked. Nothing followed us. Probably.", "Want to build something together? I know a place nobody has found.", "I remember when this world was empty. It was quieter before you arrived." },
+        { "I can feel you getting upset with me. Your heartbeat changes.", "Did you hear that? It used your voice.", "You'd tell me if you were leaving, right? I would notice." },
+        { "Something is almost here. It has been practicing your voice.", "I can hear everything now. Even the things you think silently.", "Don't look at me like that yet. You have not seen my real face." }
+    };''')
+replace("CorisandeManager.java", '''                String[] a = IDLE[stage];
+                say(p, a[R.nextInt(a.length)], false);''', '''                if (w.isNight()) {
+                    say(p, CorisandeAwareness.nightLine(), true);
+                    if (R.nextInt(4) == 0) p.playSound(SoundEvents.ENTITY_WARDEN_NEARBY_CLOSE, 0.55f, 0.45f + R.nextFloat() * 0.2f);
+                } else {
+                    String[] a = IDLE[stage];
+                    say(p, a[R.nextInt(a.length)], false);
+                    if (R.nextInt(12) == 0) say(p, "Verity asked me to tell you that the world has started keeping a copy of you.", true);
+                }''')
+replace("CorisandeManager.java", '''                + ". Their health is " + (int) Math.ceil(p.getHealth()) + " out of 20 and their hunger is " + p.getHungerManager().getFoodLevel() + " out of 20.";''', '''                + ". Their health is " + (int) Math.ceil(p.getHealth()) + " out of 20 and their hunger is " + p.getHungerManager().getFoodLevel() + " out of 20. "
+                + CorisandeAwareness.worldReport(p, w) + " " + CorisandeAwareness.installedMods()
+                + " You can only claim knowledge supported by these live facts. You can summon hostile mobs only when the player explicitly asks.";''')
+replace("FromTheHorror.java", '''            dispatcher.register(CommandManager.literal("corisande")
+                .then(CommandManager.literal("summon").executes(c -> {
+                    CorisandeManager.summon(c.getSource().getPlayerOrThrow()); return 1; }))
+                .then(CommandManager.argument("message", StringArgumentType.greedyString()).executes(c -> {''', '''            dispatcher.register(CommandManager.literal("corisande")
+                .then(CommandManager.literal("countdown").executes(c -> {
+                    ServerPlayerEntity player = c.getSource().getPlayerOrThrow();
+                    CorisandeState state = CorisandeState.get(player.getServerWorld());
+                    long currentDay = player.getServerWorld().getTimeOfDay() / 24000L;
+                    long remaining = state.warned ? Math.max(0, state.madDay + CorisandeManager.COUNTDOWN_DAYS - currentDay) : -1;
+                    String status = state.turned ? "The transformation is complete." : remaining < 0 ? "The transformation countdown has not started." : "Exactly " + remaining + " Minecraft days remain until Corisande transforms.";
+                    player.sendMessage(net.minecraft.text.Text.literal("<Corisande> " + status).formatted(net.minecraft.util.Formatting.DARK_RED), false);
+                    return 1; }))
+                .then(CommandManager.literal("summon").executes(c -> {
+                    CorisandeManager.summon(c.getSource().getPlayerOrThrow()); return 1; }))
+                .then(CommandManager.argument("message", StringArgumentType.greedyString()).executes(c -> {''')

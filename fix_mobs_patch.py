@@ -33,4 +33,17 @@ director.write_text(src[:start] + method + src[end:], encoding="utf-8")
 
 """
 p.write_text(s[:a]+patch+s[b:],encoding="utf-8")
-print("Updated the monster patch to replace the current natural-spawn method safely.")
+# The hosted runner does not include Pillow; reuse the mod's bundled textures.
+f=Path("finish_mobs.py")
+t=f.read_text(encoding="utf-8")
+a=t.index("# Texture variants")
+b=t.index("lang =",a)
+texture_patch = """# Reuse the bundled entity textures; the new mobs have their own model layers and scales.
+tex = project / "src/main/resources/assets/fromthehorror/textures/entity"
+for src,dst in [("dweller.png","lurker.png"),("watcher.png","mimic.png"),("man_from_the_fog.png","screecher.png"),
+                ("dweller_eyes.png","lurker_eyes.png"),("watcher_eyes.png","mimic_eyes.png"),("man_from_the_fog_eyes.png","screecher_eyes.png")]:
+    shutil.copyfile(tex/src,tex/dst)
+
+"""
+f.write_text(t[:a]+texture_patch+t[b:],encoding="utf-8")
+print("Updated natural spawning and removed the Pillow dependency from texture setup.")

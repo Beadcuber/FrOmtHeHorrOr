@@ -14,26 +14,8 @@ def edit(rel, old, new, count=1):
 edit("CorisandeManager.java",
      "if (st.warned && !st.turned && day >= st.madDay + COUNTDOWN_DAYS) turnNow(w);",
      "if (st.warned && !st.turned && day >= st.madDay + COUNTDOWN_DAYS && w.isNight()) turnNow(w);")
-edit("CorisandeManager.java",
-     'say(pl, "Five days. I told you something was coming.", true);',
-     'say(pl, "Five full day-and-night cycles. I waited until night.", true);')
-edit("CorisandeManager.java",
-     "return st.warned ? Math.max(0, st.madDay + COUNTDOWN_DAYS - day) : COUNTDOWN_DAYS;",
-     "return st.warned ? Math.max(0, st.madDay + COUNTDOWN_DAYS - day) : COUNTDOWN_DAYS;")
-edit("CorisandeManager.java",
-     "if (st.warned && !st.turned && day >= st.madDay + COUNTDOWN_DAYS && w.isNight()) turnNow(w);",
-     "if (st.warned && !st.turned && day >= st.madDay + COUNTDOWN_DAYS && w.isNight()) turnNow(w);")
 
 # Make the large form genuinely monstrous.
-edit("CorisandeEntity.java",
-     "return isHostile() ? EntityDimensions.fixed(1.6f, 1.8f) : super.getDimensions(pose);",
-     "return isHostile() ? EntityDimensions.fixed(3.2f, 4.8f) : super.getDimensions(pose);")
-edit("CorisandeEntity.java",
-     "this.getAttributeInstance(EntityAttributes.GENERIC_FLYING_SPEED).setBaseValue(0.75);",
-     "this.getAttributeInstance(EntityAttributes.GENERIC_FLYING_SPEED).setBaseValue(0.95);\n        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.48);\n        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(18.0);")
-edit("CorisandeEntity.java",
-     "this.getNavigation().startMovingTo(p.getX(), p.getY() + 0.8, p.getZ(), 1.4);",
-     "this.getNavigation().startMovingTo(p.getX(), p.getY() + 1.8, p.getZ(), 1.65);")
 # The special monster egg creates an independent hostile Corisande, not the world's bonded orb.
 edit("CorisandeEntity.java",
      "this.setCustomNameVisible(true);\n    }",

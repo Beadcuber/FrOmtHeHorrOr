@@ -237,7 +237,7 @@ replace("CorisandeBrain.java", '''        if (!addressed) return null;
         }
         if (any(s, "what mods are installed", "list mods", "what mods do i have", "which mods", "all mods")) return CorisandeAwareness.installedMods();
         if (any(s, "what is happening", "what's happening", "describe this place", "analyze the world", "what do you see", "look around")) return CorisandeAwareness.worldReport(p, w);
-        if (s.startsWith("summon ") || s.startsWith("bring me ") || s.startsWith("call a ") || s.startsWith("call an ")) {
+        if (s.contains("summon ") || s.startsWith("bring me ") || s.startsWith("call a ") || s.startsWith("call an ")) {
             boolean done = CorisandeAwareness.summon(s, p, w);
             return done ? "There. I brought it here. Do not blame me if it notices you." : "I tried. Either that creature cannot be summoned here, or something refused to let it through.";
         }

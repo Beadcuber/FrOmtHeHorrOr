@@ -289,3 +289,5 @@ replace("FromTheHorror.java", '''            dispatcher.register(CommandManager.
                 .then(CommandManager.literal("summon").executes(c -> {
                     CorisandeManager.summon(c.getSource().getPlayerOrThrow()); return 1; }))
                 .then(CommandManager.argument("message", StringArgumentType.greedyString()).executes(c -> {''')
+
+replace("FromTheHorror.java", "import net.minecraft.server.command.CommandManager;", "import net.minecraft.server.command.CommandManager;\nimport net.minecraft.server.network.ServerPlayerEntity;")

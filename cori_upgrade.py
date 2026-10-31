@@ -179,4 +179,12 @@ data["item.fromthehorror.corisande_monster_spawn_egg"] = "Corisande Monster Spaw
 data["entity.fromthehorror.corisande_monster"] = "Corisande (Monster)"
 lang.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
+# Register a renderer for the separate monster entity type as well.
+p = root / "client/FromTheHorrorClient.java"
+s = p.read_text(encoding="utf-8")
+old = "        EntityRendererRegistry.register(FromTheHorror.CORISANDE, CorisandeRenderer::new);"
+if old not in s: raise SystemExit("Missing Corisande renderer registration")
+s = s.replace(old, old + "\n        EntityRendererRegistry.register(FromTheHorror.CORISANDE_MONSTER, CorisandeRenderer::new);", 1)
+p.write_text(s, encoding="utf-8")
+
 print("Applied night-gated five-cycle transformation, village location, chat responses, monster summon/egg, and iron-tier gift limits.")

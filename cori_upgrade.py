@@ -43,10 +43,10 @@ s = s.replace("""        FabricDefaultAttributeRegistry.register(CORISANDE, Cori
 """, 1)
 s = s.replace("""        Item e4 = egg("corisande", CORISANDE, 0xff9628, 0x7a1010);
 """, """        Item e4 = egg("corisande", CORISANDE, 0xff9628, 0x7a1010);
-        Item e5 = egg("corisande_monster", CORISANDE_MONSTER, 0x120b12, 0x9b111f);
+        Item e8 = egg("corisande_monster", CORISANDE_MONSTER, 0x120b12, 0x9b111f);
 """, 1)
 s = s.replace("e.add(e1); e.add(e2); e.add(e3); e.add(e4);",
-              "e.add(e1); e.add(e2); e.add(e3); e.add(e4); e.add(e5);", 1)
+              "e.add(e1); e.add(e2); e.add(e3); e.add(e4); e.add(e5); e.add(e8);", 1)
 s = s.replace("""                .then(CommandManager.literal("summon").executes(c -> {
                     CorisandeManager.summon(c.getSource().getPlayerOrThrow()); return 1; }))
 """, """                .then(CommandManager.literal("summon").executes(c -> {

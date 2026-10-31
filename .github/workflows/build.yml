@@ -46,6 +46,9 @@ jobs:
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
           echo "Using project directory: $PROJECT_DIR"
 
+      - name: Install audio encoder
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Apply requested gameplay changes
         shell: bash
         run: |

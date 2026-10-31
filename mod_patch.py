@@ -307,3 +307,70 @@ replace("FromTheHorror.java", "        ServerTickEvents.END_WORLD_TICK.register(
         ServerTickEvents.END_WORLD_TICK.register(DreadDirector::tick);""")
 
 # Next patch section: new cave encounter and atmospheric horror systems.
+
+# Fifty randomized atmospheric encounters, with light status/sound/particle effects.
+horror_events = r"""package com.fromthehorror;
+import net.minecraft.entity.effect.*;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.*;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import java.util.*;
+public final class HorrorEvents {
+ private HorrorEvents() {}
+ private static final Random R=new Random();
+ private static final Map<UUID,Integer> CLOCKS=new HashMap<>();
+ private static final String[] EVENTS={
+ "You hear slow breathing inside the nearest wall.","A second set of footsteps follows yours.",
+ "Something knocks three times beneath the floor.","A silhouette vanishes when you look at it.",
+ "Your flashlight flickers. Something crossed in front of it.","A distant voice repeats your last message.",
+ "Every sound in the world stops for a moment.","A door opens somewhere, but there are no doors nearby.",
+ "A low growl comes from directly above you.","Something scratches at stone behind you.",
+ "A child's laugh echoes through the cave.","Your own footsteps approach from the darkness.",
+ "A shadow moves against the direction of the light.","The cave just got quieter. That is not good.",
+ "A heartbeat thumps nearby. It is much too slow.","A minecart rolls on a track that does not exist.",
+ "A voice whispers: I can see your name.","Something splashes nearby. Nothing is there.",
+ "A heavy object drags across the ground behind you.","A familiar voice calls from a dark tunnel.",
+ "The air turns cold. Something is standing close.","A pair of eyes glints in the dark, then disappears.",
+ "Three knocks answer from far underground.","You hear stone breaking, one block at a time.",
+ "A distant scream cuts off before it finishes.","Something runs past you. You never see it.",
+ "Your name is whispered from the wrong direction.","A shadow briefly covers the moon.",
+ "The darkness moves when you stop moving.","A soft humming follows you from room to room.",
+ "Claws tap against the ceiling.","A second heartbeat starts beating beside yours.",
+ "Something exhales right behind your ear.","A faraway bell rings once. No village is nearby.",
+ "The cave echoes with a scream that sounds like you.","A figure stands still at the end of the tunnel.",
+ "You hear a torch being placed, but no one is there.","A slow, wet sound comes from the darkness below.",
+ "Something taps on the back of your helmet.","The wind whispers: do not go back.",
+ "A low laugh follows the sound of your inventory opening.","Breathing stops the instant you turn around.",
+ "A shape crawls across the ceiling above you.","A voice says: that is not the way out.",
+ "A door slams in a place you have never visited.","The darkness behind you feels crowded.",
+ "A distant roar shakes the cave. Dust falls.","Something whispers the number of this day.",
+ "A familiar voice says: I found you.","A tall figure stands inside your shadow for one second."
+ };
+ public static void tick(ServerWorld w){
+  if(w.getTime()%20!=0)return;
+  for(ServerPlayerEntity p:w.getPlayers()){
+   if(p.isSpectator())continue;
+   int t=CLOCKS.getOrDefault(p.getUuid(),900+R.nextInt(1800))-1;
+   if(t>0){CLOCKS.put(p.getUuid(),t);continue;}
+   CLOCKS.put(p.getUuid(),900+R.nextInt(1800));
+   if(R.nextInt(100)<22)continue;
+   int id=R.nextInt(EVENTS.length);
+   p.sendMessage(Text.literal("[ UNKNOWN ] "+EVENTS[id]).formatted(Formatting.DARK_RED),false);
+   switch(id%6){
+    case 0 -> p.playSound(SoundEvents.ENTITY_WARDEN_HEARTBEAT,.8f,.55f+R.nextFloat()*.35f);
+    case 1 -> {p.playSound(SoundEvents.BLOCK_STONE_STEP,.9f,.45f);p.playSound(SoundEvents.BLOCK_STONE_STEP,.9f,.45f);}
+    case 2 -> {p.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS,50,0,false,false,false));p.playSound(SoundEvents.ENTITY_WARDEN_NEARBY_CLOSE,.8f,.6f);}
+    case 3 -> {p.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS,18,0,false,false,false));p.playSound(SoundEvents.ENTITY_ENDERMAN_STARE,.65f,.5f);}
+    case 4 -> {BlockPos b=p.getBlockPos();w.spawnParticles(ParticleTypes.SMOKE,b.getX()+.5,b.getY()+1,b.getZ()+.5,18,1.2,.7,1.2,.015);p.playSound(SoundEvents.ENTITY_VEX_AMBIENT,.8f,.5f);}
+    default -> {Vec3d v=p.getRotationVec(1).multiply(-1,0,-1).normalize().multiply(4);w.playSound(null,p.getX()+v.x,p.getY(),p.getZ()+v.z,SoundEvents.ENTITY_ZOMBIE_AMBIENT,SoundCategory.AMBIENT,.9f,.45f);}
+   }
+  }
+ }
+}
+"""
+(root / "HorrorEvents.java").write_text(horror_events, encoding="utf-8")

@@ -83,3 +83,89 @@ s=s.replace("        // She hears you from the moment you join (Windows). /coril
 p.write_text(s)
 lp=Path("src/main/resources/assets/fromthehorror/lang/en_us.json");d=json.loads(lp.read_text());d["key.fromthehorror.voice_settings"]="Toggle Corisande Voice Chat";d["category.fromthehorror"]="FromTheHorror";lp.write_text(json.dumps(d,indent=2)+"\n")
 print("Applied 3-day timer, permission-gated summon, blank face, frequent cave encounters, mob-griefing block breaking, recent chat context, and V voice toggle.")
+
+
+# Corisande can be picked up into an inventory item and deployed again.
+carry = r / "CorisandeCarryItem.java"
+carry.write_text("""package com.fromthehorror;
+
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
+
+public class CorisandeCarryItem extends Item {
+    public CorisandeCarryItem(Settings settings) { super(settings.maxCount(1)); }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack=user.getStackInHand(hand);
+        if(!world.isClient) {
+            NbtCompound root=stack.getNbt();
+            if(root==null || !root.contains("CorisandeData")) {
+                user.sendMessage(Text.literal("Corisande's presence is missing from this item."),true);
+                return TypedActionResult.fail(stack);
+            }
+            NbtCompound data=root.getCompound("CorisandeData").copy();
+            CorisandeEntity entity=FromTheHorror.CORISANDE.create(world);
+            if(entity==null) return TypedActionResult.fail(stack);
+            entity.readNbt(data);
+            Vec3d look=user.getRotationVec(1.0f);
+            entity.refreshPositionAndAngles(user.getX()+look.x*1.5,user.getY()+0.6,user.getZ()+look.z*1.5,user.getYaw(),0);
+            entity.setNoGravity(true);
+            if(world.spawnEntity(entity)) {
+                if(!user.getAbilities().creativeMode) stack.decrement(1);
+                user.sendMessage(Text.literal("<Corisande> I'm back. I was starting to miss the view."),false);
+            }
+        }
+        return TypedActionResult.success(stack,world.isClient);
+    }
+}
+""")
+p=r/"CorisandeEntity.java";s=p.read_text()
+old="""    /** Right-click the friendly orb with an empty hand to carry her; sneak to put her down. */
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (isHostile() || getType() != FromTheHorror.CORISANDE || !player.getStackInHand(hand).isEmpty()) return ActionResult.PASS;
+        if (!this.getWorld().isClient) {
+            if (hasVehicle()) { stopRiding(); player.sendMessage(Text.literal("<Corisande> I can walk. You don't have to carry me forever."), false); }
+            else if (player.getPassengerList().isEmpty() && startRiding(player, true)) {
+                getNavigation().stop();
+                player.sendMessage(Text.literal("<Corisande> Oh! A lift? I can see everything from up here."), false);
+            }
+        }
+        return ActionResult.success(this.getWorld().isClient);
+    }"""
+new="""    /** Right-click the friendly orb with an empty hand to pack her into a hotbar item. */
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (isHostile() || getType() != FromTheHorror.CORISANDE || !player.getStackInHand(hand).isEmpty()) return ActionResult.PASS;
+        if (!this.getWorld().isClient) {
+            ItemStack carried=new ItemStack(FromTheHorror.CORISANDE_CARRY);
+            NbtCompound data=new NbtCompound();
+            this.writeNbt(data);
+            carried.getOrCreateNbt().put("CorisandeData",data);
+            if(!player.getInventory().insertStack(carried)) {
+                player.sendMessage(Text.literal("Your inventory is full. Make room to carry Corisande."),true);
+                return ActionResult.FAIL;
+            }
+            player.getInventory().markDirty();
+            player.sendMessage(Text.literal("<Corisande> Pocket-sized? ...I suppose this is fine."),false);
+            this.discard();
+        }
+        return ActionResult.success(this.getWorld().isClient);
+    }"""
+if old not in s: raise Error("pickup interaction not found in patch source");
+p.write_text(s.replace(old,new))
+p=r/"FromTheHorror.java";s=p.read_text()
+s=s.replace("    public static Item FLASHLIGHT;","    public static Item FLASHLIGHT;\n    public static Item CORISANDE_CARRY;")
+s=s.replace("        FLASHLIGHT = Registry.register(Registries.ITEM, new Identifier(ID, \"flashlight\"),","        CORISANDE_CARRY = Registry.register(Registries.ITEM, new Identifier(ID, \"corisande_carry\"), new CorisandeCarryItem(new FabricItemSettings()));\n        FLASHLIGHT = Registry.register(Registries.ITEM, new Identifier(ID, \"flashlight\"),")
+p.write_text(s)
+lp=Path("src/main/resources/assets/fromthehorror/lang/en_us.json")
+d=json.loads(lp.read_text());d["item.fromthehorror.corisande_carry"]="Corisande";lp.write_text(json.dumps(d,indent=2)+"\n")

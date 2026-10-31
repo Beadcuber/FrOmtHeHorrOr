@@ -23,6 +23,7 @@ assert "locateStructure(StructureTags.VILLAGE" in awareness
 assert 's.contains("screecher")' in awareness and 's.contains("mimic")' in awareness and 's.contains("lurker")' in awareness
 assert 'CorisandeManager.summonMonster(p)' in awareness
 assert "nearestVillage(p, w)" in brain
+assert 's.contains("summon ")' in brain
 assert "CorisandeManager.chat(sender, raw, true)" in main
 assert "advancedArmor" in items and "advancedPickaxe" in items and 'p.equals("enchanted_golden_apple")' in items
 # Mirror the explicit item policy for edge cases.

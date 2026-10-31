@@ -52,3 +52,5 @@ print("Applied music and monster upgrades")
 
 # Apply the latest requested gameplay, conversation, and client voice-key updates.
 exec(compile(Path('../next_upgrade.py').read_text(encoding='utf-8'), '../next_upgrade.py', 'exec'))
+
+# Rebuild after installing the texture-processing dependency for next_upgrade.py.

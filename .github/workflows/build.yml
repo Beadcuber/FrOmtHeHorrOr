@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/build.yml"
       - "FromTheHorror (1).zip"
+      - "mod_patch.py"
 
 permissions:
   contents: read
@@ -38,6 +39,10 @@ jobs:
           PROJECT_DIR="$(dirname "$PROJECT_FILE")"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
           echo "Using project directory: $PROJECT_DIR"
+
+      - name: Apply requested gameplay changes
+        shell: bash
+        run: python3 mod_patch.py "$PROJECT_DIR"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

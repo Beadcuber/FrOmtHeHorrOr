@@ -59,7 +59,9 @@ p=r/"DreadDirector.java";s=p.read_text().replace("900 + R.nextInt(900)","240 + R
 p=r/"client/CorisandeRenderer.java";s=p.read_text()
 s=s.replace("    private static final Identifier[] FACES = new Identifier[5];","    private static final Identifier[] FACES = new Identifier[5];\n    private static final Identifier BLANK = new Identifier(FromTheHorror.ID, \"textures/entity/corisande_blank.png\");")
 s=s.replace("    public Identifier getTexture(CorisandeEntity e) {\n        return FACES","    public Identifier getTexture(CorisandeEntity e) {\n        if (e.isHostile()) return BLANK;\n        return FACES");p.write_text(s)
-import subprocess\nsubprocess.run(["sudo","apt-get","install","-y","python3-pil"],check=True)\nfrom PIL import Image
+import subprocess
+subprocess.run(["sudo","apt-get","install","-y","python3-pil"],check=True)
+from PIL import Image
 tex=Path("src/main/resources/assets/fromthehorror/textures/entity")
 im=Image.open(tex/"corisande_4.png").convert("RGBA");px=im.load()
 for y in range(8,24):

@@ -255,7 +255,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.util.math.BlockPos;
 public final class NaturalStructures {
- public static void register(){ServerChunkEvents.CHUNK_LOAD.register((world,chunk)->{place(world,chunk);});}
+ public static void register(){ /* Disabled: direct chunk mutation during CHUNK_LOAD can stall world entry. */ }
  private static void place(ServerWorld w,WorldChunk c){
   int x0=(c.getPos().x<<4)+8,z0=(c.getPos().z<<4)+8; long h=c.getPos().x*341873128712L+c.getPos().z*132897987541L; int pick=Math.floorMod((int)(h^(h>>>32)),401); if(pick>1)return;
   int y=w.getTopY(Heightmap.Type.WORLD_SURFACE,x0,z0); if(y<w.getBottomY()+2||y>w.getTopY()-12)return; BlockPos p=new BlockPos(x0,y,z0);

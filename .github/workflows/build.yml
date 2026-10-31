@@ -11,6 +11,7 @@ on:
       - "fix_mobs_patch.py"
       - "finish_ai.py"
       - "cori_upgrade.py"
+      - "cori_verify.py"
 
 permissions:
   contents: read

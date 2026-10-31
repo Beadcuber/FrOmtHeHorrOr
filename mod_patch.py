@@ -374,3 +374,37 @@ public final class HorrorEvents {
 }
 """
 (root / "HorrorEvents.java").write_text(horror_events, encoding="utf-8")
+
+# Enable the 50-event system and make the Dweller appear in real cave spaces.
+replace("DreadDirector.java", "        CorisandeManager.tick(world);", "        CorisandeManager.tick(world);\\n        HorrorEvents.tick(world);")
+replace("DreadDirector.java", "int natural = NATURAL_SPAWN_TIMERS.getOrDefault(p.getUuid(), 2200 + R.nextInt(2600)) - 1;", "int natural = NATURAL_SPAWN_TIMERS.getOrDefault(p.getUuid(), 900 + R.nextInt(900)) - 1;")
+replace("DreadDirector.java", "NATURAL_SPAWN_TIMERS.put(p.getUuid(), 2200 + R.nextInt(2600));", "NATURAL_SPAWN_TIMERS.put(p.getUuid(), 900 + R.nextInt(900));")
+replace("DreadDirector.java", "if (roll < 65) spawn(w, p, FromTheHorror.DWELLER, 24, 38);", "if (roll < 82) spawnCaveDweller(w, p);")
+replace("DreadDirector.java", "    private static void fog(ServerWorld w, ServerPlayerEntity p) {", """    private static void spawnCaveDweller(ServerWorld w, ServerPlayerEntity p) {
+        BlockPos base = p.getBlockPos();
+        if (w.isSkyVisible(base) || base.getY() > 48) return;
+        if (!w.getEntitiesByClass(HostileEntity.class, p.getBoundingBox().expand(112), e -> e.getType() == FromTheHorror.DWELLER).isEmpty()) return;
+        for (int i = 0; i < 24; i++) {
+            double a = R.nextDouble() * Math.PI * 2;
+            int d = 22 + R.nextInt(25), x = base.getX() + (int)(Math.cos(a)*d), z = base.getZ() + (int)(Math.sin(a)*d);
+            int y = base.getY() + R.nextInt(17) - 8;
+            BlockPos at = new BlockPos(x,y,z);
+            if (!w.isChunkLoaded(at) || w.isSkyVisible(at) || w.getLightLevel(at) > 7) continue;
+            if (!w.getBlockState(at).isAir() || !w.getBlockState(at.up()).isAir() || !w.getBlockState(at.up(2)).isAir()) continue;
+            if (!w.getBlockState(at.down()).isSolidBlock(w,at.down())) continue;
+            DwellerEntity mob = FromTheHorror.DWELLER.create(w);
+            if (mob == null) return;
+            mob.refreshPositionAndAngles(x+.5,y,z+.5,R.nextFloat()*360f,0);
+            w.spawnEntity(mob);
+            return;
+        }
+    }
+
+    private static void fog(ServerWorld w, ServerPlayerEntity p) {""")
+# Corisande's transformed form gets a much larger hitbox, model scale, and heavier damage.
+replace("CorisandeEntity.java", "return isHostile() ? EntityDimensions.fixed(1.6f, 1.8f) : super.getDimensions(pose);", "return isHostile() ? EntityDimensions.fixed(3.2f, 4.8f) : super.getDimensions(pose);")
+replace("CorisandeEntity.java", ".add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)", ".add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 18.0)")
+replace("CorisandeEntity.java", "this.getAttributeInstance(EntityAttributes.GENERIC_FLYING_SPEED).setBaseValue(0.75);", "this.getAttributeInstance(EntityAttributes.GENERIC_FLYING_SPEED).setBaseValue(0.95);\\n        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.48);\\n        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(18.0);")
+replace("CorisandeEntity.java", "this.getNavigation().startMovingTo(p.getX(), p.getY() + 0.8, p.getZ(), 1.4);", "this.getNavigation().startMovingTo(p.getX(), p.getY() + 1.8, p.getZ(), 1.65);")
+replace("CorisandeRenderer.java", "float s = e.isHostile() ? 2.6f : 1.3f;\\n        m.scale(s, s, s);", "if (e.isHostile()) m.scale(4.6f, 4.6f, 4.6f);\\n        else m.scale(1.3f, 1.3f, 1.3f);")
+replace("CorisandeManager.java", '"Five days. I told you something was coming."', '"The fifth day is over. Day and night, five times. Now you see what I really am."')

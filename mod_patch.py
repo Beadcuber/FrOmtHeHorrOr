@@ -291,3 +291,17 @@ replace("FromTheHorror.java", '''            dispatcher.register(CommandManager.
                 .then(CommandManager.argument("message", StringArgumentType.greedyString()).executes(c -> {''')
 
 replace("FromTheHorror.java", "import net.minecraft.server.command.CommandManager;", "import net.minecraft.server.command.CommandManager;\nimport net.minecraft.server.network.ServerPlayerEntity;")
+
+replace("FromTheHorror.java", "import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;", "import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;\nimport net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;\nimport net.minecraft.item.ItemStack;")
+replace("FromTheHorror.java", "        ServerTickEvents.END_WORLD_TICK.register(DreadDirector::tick);", """        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayerEntity player = handler.getPlayer();
+            String marker = "fromthehorror_received_starting_flashlight";
+            if (!player.getCommandTags().contains(marker)) {
+                ItemStack flashlight = new ItemStack(FLASHLIGHT);
+                if (!player.getInventory().insertStack(flashlight)) player.dropItem(flashlight, false);
+                player.addCommandTag(marker);
+                player.sendMessage(net.minecraft.text.Text.literal("You received a flashlight. Keep it close.").formatted(net.minecraft.util.Formatting.YELLOW), false);
+            }
+        });
+
+        ServerTickEvents.END_WORLD_TICK.register(DreadDirector::tick);""")

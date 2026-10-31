@@ -30,16 +30,16 @@ jobs:
           unzip -q "FromTheHorror (1).zip" -d extracted
           echo "Archive contents:"
           find extracted -maxdepth 4 -type f | sort | head -200
-          PROJECT_DIR="$(find extracted -type f \\( -name gradlew -o -name build.gradle -o -name build.gradle.kts \\) -print -quit | xargs -r dirname)"
-          if [ -z "$PROJECT_DIR" ]; then
+          PROJECT_FILE="$(find extracted -type f | grep -E '/(gradlew|build.gradle|build.gradle.kts)$' | head -n 1)"
+          if [ -z "$PROJECT_FILE" ]; then
             echo "::error::No Gradle build file or gradlew was found inside the ZIP."
             exit 1
           fi
+          PROJECT_DIR="$(dirname "$PROJECT_FILE")"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
           echo "Using project directory: $PROJECT_DIR"
 
-      - name: Set up Gradle (fallback when wrapper is absent)
-        if: ${{ hashFiles('extracted/**/gradlew') == '' }}
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.5"
@@ -59,7 +59,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FromTheHorror-Fabric-1.20.1
-          path: |
-            ${{ env.PROJECT_DIR }}/build/libs/*.jar
+          path: ${{ env.PROJECT_DIR }}/build/libs/*.jar
           if-no-files-found: error
           retention-days: 14

@@ -9,6 +9,7 @@ on:
       - "mod_patch.py"
       - "finish_mobs.py"
       - "fix_mobs_patch.py"
+      - "finish_ai.py"
 
 permissions:
   contents: read
@@ -48,6 +49,8 @@ jobs:
           python3 mod_patch.py "$PROJECT_DIR"
           python3 fix_mobs_patch.py
           python3 finish_mobs.py "$PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          python3 ../finish_ai.py
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

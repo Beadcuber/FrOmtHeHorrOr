@@ -22,6 +22,7 @@ on:
       - "requested_oct31.py"
       - "vivian_structures.py"
       - "vivian_final.py.gz.b64"
+      - "decode_vivian_patch.py"
 
 permissions:
   contents: read
@@ -68,7 +69,7 @@ jobs:
           python3 ../feature_fix.py .
           python3 ../requested_oct31.py
           python3 ../vivian_structures.py
-          base64 -d ../vivian_final.py.gz.b64 | gzip -d > ../vivian_final.py
+          python3 ../decode_vivian_patch.py ../vivian_final.py.gz.b64 ../vivian_final.py
           python3 ../vivian_final.py
           python3 ../cori_verify.py
       - name: Set up Gradle

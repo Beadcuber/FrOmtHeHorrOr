@@ -1,5 +1,5 @@
 from pathlib import Path
-import sys, zipfile
+import sys, zipfile, re
 
 root = Path("src/main/java/com/fromthehorror")
 def read(name): return (root / name).read_text(encoding="utf-8")
@@ -14,7 +14,7 @@ awareness = read("CorisandeAwareness.java")
 client = (root / "client/FromTheHorrorClient.java").read_text(encoding="utf-8")
 
 assert "COUNTDOWN_DAYS = 3" in manager
-assert "state.completedCycles>=COUNTDOWN_DAYS" in manager or "st.completedCycles>=COUNTDOWN_DAYS" in manager
+assert re.search(r"(?:state|st)\\.completedCycles\\s*>=\\s*COUNTDOWN_DAYS", manager), "3-cycle threshold check missing"
 assert "completedCycles" in state and "lastNight" in state and "cycleInitialized" in state
 assert "EntityDimensions.fixed(3.2f, 4.8f)" in entity
 assert "this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(26.0)" in entity
@@ -43,7 +43,7 @@ assert 'CommandManager.literal("gamemode")' not in main
 assert "else if (!st.lastNight && nightNow)" in manager
 assert "st.completedCycles++" in manager
 assert "st.lastNight=true" in manager and "st.lastNight=false" in manager
-assert "state.completedCycles>=COUNTDOWN_DAYS" in manager or "st.completedCycles>=COUNTDOWN_DAYS" in manager
+assert re.search(r"(?:state|st)\\.completedCycles\\s*>=\\s*COUNTDOWN_DAYS", manager), "3-cycle threshold check missing"
 
 if "--jar" in sys.argv:
     jar_path = Path(sys.argv[sys.argv.index("--jar") + 1])

@@ -51,7 +51,7 @@ edit('CorisandeEntity.java',ce)
 p=base/'NaturalStructures.java'; s=p.read_text()
 if 'public static BlockPos nearest' not in s:
  s=s.replace('import java.util.Set;','import java.util.Set;\nimport java.util.List;\nimport java.util.ArrayList;')
- s=s.replace('private static final Set<Long> DONE = new HashSet<>();','private static final Set<Long> DONE = new HashSet<>();\n private static final List<BlockPos> CABINS=new ArrayList<>(), SHRINES=new ArrayList<>();\n public static BlockPos nearest(BlockPos from, boolean cabin){return (cabin?CABINS:SHRINES).stream().min(java.util.Comparator.comparingLong(p->p.getSquaredDistance(from))).orElse(null);}')
+ s=s.replace('private static final Set<Long> DONE = new HashSet<>();','private static final Set<Long> DONE = new HashSet<>();\n private static final List<BlockPos> CABINS=new ArrayList<>(), SHRINES=new ArrayList<>();\n public static BlockPos nearest(BlockPos from, boolean cabin){return (cabin?CABINS:SHRINES).stream().min(java.util.Comparator.comparingDouble(p->p.getSquaredDistance(from))).orElse(null);}')
  s=s.replace('private static void place(ServerWorld w, BlockPos p, boolean cabin){','private static void place(ServerWorld w, BlockPos p, boolean cabin){\n  (cabin?CABINS:SHRINES).add(p.toImmutable());')
  p.write_text(s)
 p=base/'FromTheHorror.java'; s=p.read_text()
@@ -65,7 +65,6 @@ if 'literal("fromthehorror")' not in s:
  s=s.replace('The fifth cycle is complete. Corisande will transform when night falls.','Three day-to-night cycles are complete. Corisande will transform when night falls.')
  s=s.replace('full Minecraft day/night cycles remain','day-to-night cycles remain')
  p.write_text(s)
-# item icon: illustrated orb instead of the entity UV atlas
 asset=root/'src/main/resources/assets/fromthehorror'; tex=asset/'textures/item'; tex.mkdir(parents=True,exist_ok=True)
 for angry in (False,True):
  im=Image.new('RGBA',(64,64)); px=im.load()

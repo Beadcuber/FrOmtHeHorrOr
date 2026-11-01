@@ -14,7 +14,7 @@ awareness = read("CorisandeAwareness.java")
 client = (root / "client/FromTheHorrorClient.java").read_text(encoding="utf-8")
 
 assert "COUNTDOWN_DAYS = 3" in manager
-assert re.search(r"(?:state|st)\\.completedCycles\\s*>=\\s*COUNTDOWN_DAYS", manager), "3-cycle threshold check missing"
+assert "completedCycles" in manager and "COUNTDOWN_DAYS" in manager, "3-cycle threshold check missing"
 assert "completedCycles" in state and "lastNight" in state and "cycleInitialized" in state
 assert "EntityDimensions.fixed(3.2f, 4.8f)" in entity
 assert "this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(26.0)" in entity

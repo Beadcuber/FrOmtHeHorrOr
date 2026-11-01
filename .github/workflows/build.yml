@@ -1,5 +1,5 @@
-name: Build FromTheHorror (Fabric 1.20.1)
-# Rebuild trigger: requested feature integration work
+name: Build Vivian (Fabric 1.20.1)
+# Full Vivian-only cleanup, identity migration and gameplay verification
 
 on:
   workflow_dispatch:
@@ -21,6 +21,7 @@ on:
       - "feature_fix.py"
       - "requested_oct31.py"
       - "vivian_structures.py"
+      - "vivian_final.py.gz.b64"
 
 permissions:
   contents: read
@@ -51,7 +52,7 @@ jobs:
           echo "Using project directory: $PROJECT_DIR"
       - name: Install audio encoder and texture tooling
         run: sudo apt-get update && sudo apt-get install -y ffmpeg python3-pil
-      - name: Apply requested gameplay changes
+      - name: Apply Vivian-only gameplay changes
         shell: bash
         run: |
           python3 mod_patch.py "$PROJECT_DIR"
@@ -67,12 +68,14 @@ jobs:
           python3 ../feature_fix.py .
           python3 ../requested_oct31.py
           python3 ../vivian_structures.py
+          base64 -d ../vivian_final.py.gz.b64 | gzip -d > ../vivian_final.py
+          python3 ../vivian_final.py
           python3 ../cori_verify.py
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.5"
-      - name: Build mod
+      - name: Build Vivian mod
         shell: bash
         run: |
           cd "$PROJECT_DIR"
@@ -83,17 +86,17 @@ jobs:
             gradle clean build --no-daemon
           fi
           python3 ../cori_verify.py --jar "$(find build/libs -name '*.jar' | head -n 1)"
-      - name: Upload built JARs
+      - name: Upload Vivian JARs
         uses: actions/upload-artifact@v4
         with:
-          name: FromTheHorror-Fabric-1.20.1
+          name: Vivian-Fabric-1.20.1
           path: ${{ env.PROJECT_DIR }}/build/libs/*.jar
           if-no-files-found: error
           retention-days: 14
-      - name: Upload editable source
+      - name: Upload editable Vivian source
         uses: actions/upload-artifact@v4
         with:
-          name: FromTheHorror-source
+          name: Vivian-source
           path: ${{ env.PROJECT_DIR }}/
           if-no-files-found: error
           retention-days: 14

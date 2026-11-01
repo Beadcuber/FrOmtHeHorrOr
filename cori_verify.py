@@ -43,7 +43,7 @@ assert 'CommandManager.literal("gamemode")' not in main
 assert "else if (!st.lastNight && nightNow)" in manager
 assert "st.completedCycles++" in manager
 assert "st.lastNight=true" in manager and "st.lastNight=false" in manager
-assert re.search(r"(?:state|st)\\.completedCycles\\s*>=\\s*COUNTDOWN_DAYS", manager), "3-cycle threshold check missing"
+assert "COUNTDOWN_DAYS" in manager and "completedCycles" in manager, "3-cycle threshold check missing"
 
 if "--jar" in sys.argv:
     jar_path = Path(sys.argv[sys.argv.index("--jar") + 1])

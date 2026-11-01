@@ -20,6 +20,7 @@ on:
       - "voice_fix.py"
       - "feature_fix.py"
       - "requested_oct31.py"
+      - "vivian_structures.py"
 
 permissions:
   contents: read

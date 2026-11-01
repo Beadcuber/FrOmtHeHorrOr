@@ -16,10 +16,19 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Comparator;
 
 /** Places one ThatMob-inspired wooden house and one remote lookout per Overworld save. */
 public final class NaturalStructures {
     private static final Set<String> DONE = new HashSet<>();
+    private static final List<BlockPos> HOUSES = new ArrayList<>();
+    private static final List<BlockPos> TOWERS = new ArrayList<>();
+    public static BlockPos nearest(BlockPos from, boolean house) {
+        List<BlockPos> sites = house ? HOUSES : TOWERS;
+        return sites.stream().min(Comparator.comparingDouble(p -> p.getSquaredDistance(from))).orElse(null);
+    }
     private NaturalStructures() {}
 
     public static void register() {
@@ -55,6 +64,7 @@ public final class NaturalStructures {
         clear(world, base, house ? 7 : 4, house ? 9 : 22, house ? 6 : 4);
         if (house) buildHouse(world, base);
         else buildWatchtower(world, base);
+        (house ? HOUSES : TOWERS).add(base.toImmutable());
     }
 
     private static void clear(ServerWorld w, BlockPos p, int rx, int height, int rz) {

@@ -16,7 +16,7 @@ anchor="    private static String systemPrompt(ServerPlayerEntity p, CorisandeSt
 methods="""    private static void remember(ServerPlayerEntity p, String message) {
         ArrayDeque<String> h=RECENT_CHAT.computeIfAbsent(p.getUuid(),k->new ArrayDeque<>());
         if(!message.isBlank()) h.addLast("Player: "+message);
-        while(h.size()>12) h.removeFirst();
+        while(h.size()>44) h.removeFirst();
     }
     private static String recentContext(ServerPlayerEntity p) {
         ArrayDeque<String> h=RECENT_CHAT.get(p.getUuid());

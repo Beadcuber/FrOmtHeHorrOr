@@ -19,7 +19,7 @@ assert "EntityRendererRegistry.register(FromTheHorror.CORISANDE_MONSTER, Corisan
 assert "locateStructure(StructureTags.VILLAGE" in awareness and "nearestVillage(p, w)" in brain
 assert "CorisandeManager.summonMonster(p)" in awareness and 's.contains("summon ")' in brain
 assert "CorisandeManager.chat(sender, raw, true)" in main
-assert "CHAT_TIMES" in manager and "Do... not.... spam.. CHAT!" in manager
+assert "CHAT_TIMES" in manager and "Do... not.... spam.. CHAT!" in manager and "long chatTick = w.getTime();" in manager
 assert "Tts.interrupt()" in client and "public static synchronized void interrupt()" in tts
 assert "requestTeleport" not in entity and "st.entity == null &&" in manager
 assert "DreadDirector.spawn" not in main and "naturalSpawn" not in dread and "checkHerobrineRituals" not in dread

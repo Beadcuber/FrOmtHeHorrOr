@@ -63,7 +63,7 @@ jobs:
           python3 ../cori_verify.py
           python3 ../final_fixes.py
           python3 ../voice_fix.py
-          python3 ../feature_fix.py "$PROJECT_DIR"
+          python3 ../feature_fix.py .
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:

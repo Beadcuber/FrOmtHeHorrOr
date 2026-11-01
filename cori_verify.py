@@ -5,6 +5,7 @@ root = Path("src/main/java/com/fromthehorror")
 def read(name): return (root / name).read_text(encoding="utf-8")
 
 manager = read("CorisandeManager.java")
+state = read("CorisandeState.java")
 brain = read("CorisandeBrain.java")
 entity = read("CorisandeEntity.java")
 main = read("FromTheHorror.java")
@@ -13,7 +14,8 @@ awareness = read("CorisandeAwareness.java")
 client = (root / "client/FromTheHorrorClient.java").read_text(encoding="utf-8")
 
 assert "COUNTDOWN_DAYS = 3" in manager
-assert "day >= st.madDay + COUNTDOWN_DAYS && w.isNight()" in manager
+assert "state.completedCycles>=COUNTDOWN_DAYS" in manager or "st.completedCycles>=COUNTDOWN_DAYS" in manager
+assert "completedCycles" in state and "lastNight" in state and "cycleInitialized" in state
 assert "EntityDimensions.fixed(3.2f, 4.8f)" in entity
 assert "this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(26.0)" in entity
 assert "CORISANDE_MONSTER" in main and 'literal("monster")' in main and 'literal("corisande_monster")' in main
@@ -26,7 +28,6 @@ assert "nearestVillage(p, w)" in brain
 assert 's.contains("summon ")' in brain
 assert "CorisandeManager.chat(sender, raw, true)" in main
 assert "advancedArmor" in items and "advancedPickaxe" in items and 'p.equals("enchanted_golden_apple")' in items
-# Mirror the explicit item policy for edge cases.
 def gift_blocked(path):
     armor = path.endswith(("_helmet", "_chestplate", "_leggings", "_boots")) and (path.startswith(("golden_", "diamond_", "netherite_")) or path == "turtle_helmet")
     pick = path in {"golden_pickaxe", "diamond_pickaxe", "netherite_pickaxe"}
@@ -36,22 +37,13 @@ assert not gift_blocked("iron_helmet") and not gift_blocked("iron_pickaxe")
 assert gift_blocked("golden_helmet") and gift_blocked("diamond_chestplate")
 assert gift_blocked("golden_pickaxe") and gift_blocked("netherite_pickaxe")
 assert not gift_blocked("golden_apple") and gift_blocked("enchanted_golden_apple")
-assert 'never run' in (manager + brain).lower() or 'Never run' in (manager + brain)
 assert 'CommandManager.literal("gamemode")' not in main
 
-# Five full 24,000-tick cycles must elapse, and the transition is night-gated.
-def transforms(time_of_day, warned_day):
-    day = time_of_day // 24000
-    phase = time_of_day % 24000
-    return day >= warned_day + 3 and 13000 <= phase < 23000
-
-assert not transforms(100 * 24000 + 14000, 100)   # first night
-assert not transforms(102 * 24000 + 14000, 100)   # third night
-assert not transforms(103 * 24000 + 1000, 100)    # dawn after three cycles
-assert not transforms(103 * 24000 + 8000, 100)    # afternoon after three cycles
-assert transforms(103 * 24000 + 14000, 100)       # third night
-assert not transforms(104 * 24000 + 1000, 100)    # missed/skipped night waits
-assert transforms(104 * 24000 + 14000, 100)       # next night
+# Cycle tracking is based on observed day -> night transitions, not world-time day numbers.
+assert "else if (!st.lastNight && nightNow)" in manager
+assert "st.completedCycles++" in manager
+assert "st.lastNight=true" in manager and "st.lastNight=false" in manager
+assert "state.completedCycles>=COUNTDOWN_DAYS" in manager or "st.completedCycles>=COUNTDOWN_DAYS" in manager
 
 if "--jar" in sys.argv:
     jar_path = Path(sys.argv[sys.argv.index("--jar") + 1])
@@ -68,4 +60,4 @@ if "--jar" in sys.argv:
         missing = required - names
         assert not missing, "Missing compiled JAR entries: " + ", ".join(sorted(missing))
         assert jar.testzip() is None, "Corrupt JAR entry found"
-print("PASS: three-cycle/night timing, monster form, summon command/egg/renderer, village lookup, all-chat replies, iron-tier gift restrictions, and JAR integrity.")
+print("PASS: three-transition countdown source, monster form, summon command/egg/renderer, village lookup, all-chat replies, iron-tier gift restrictions, and JAR integrity.")

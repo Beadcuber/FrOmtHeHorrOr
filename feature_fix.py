@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys, math
 from PIL import Image, ImageDraw, ImageFilter
-root=Path(sys.argv[1]); base=root/'src/main/java/com/fromthehorror'
+root=Path(sys.argv[1]); base=next((p.parent for p in root.rglob('DreadDirector.java')), root/'src/main/java/com/fromthehorror')
 def edit(n,f):
  p=base/n; s=p.read_text(); p.write_text(f(s))
 def d(s):

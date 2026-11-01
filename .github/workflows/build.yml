@@ -19,6 +19,7 @@ on:
       - "final_fixes.py"
       - "voice_fix.py"
       - "feature_fix.py"
+      - "requested_oct31.py"
 
 permissions:
   contents: read
@@ -63,6 +64,7 @@ jobs:
           python3 ../final_fixes.py
           python3 ../voice_fix.py
           python3 ../feature_fix.py .
+          python3 ../requested_oct31.py
           python3 ../cori_verify.py
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

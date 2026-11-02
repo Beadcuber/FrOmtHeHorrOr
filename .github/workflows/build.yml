@@ -73,6 +73,21 @@ jobs:
           python3 ../decode_vivian_patch.py ../vivian_final.py.gz.b64 ../vivian_final.py
           python3 ../vivian_final.py
           python3 ../vivian_compile_fix.py
+          # Fix entrypoints/mixin package names to match the actual Java package paths.
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path(".")
+          mod = root / "src/main/resources/fabric.mod.json"
+          data = json.loads(mod.read_text())
+          data["entrypoints"]["main"] = ["com.fromthehorror.FromTheHorror"]
+          data["entrypoints"]["client"] = ["com.fromthehorror.client.FromTheHorrorClient"]
+          mod.write_text(json.dumps(data, indent=2) + "\\n")
+          mixins = root / "src/main/resources/vivian.mixins.json"
+          mixin_data = json.loads(mixins.read_text())
+          mixin_data["package"] = "com.fromthehorror.mixin"
+          mixins.write_text(json.dumps(mixin_data, indent=2) + "\\n")
+          PY
           python3 ../cori_verify.py
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4

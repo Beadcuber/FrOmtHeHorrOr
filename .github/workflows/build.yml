@@ -82,11 +82,11 @@ jobs:
           data = json.loads(mod.read_text())
           data["entrypoints"]["main"] = ["com.fromthehorror.FromTheHorror"]
           data["entrypoints"]["client"] = ["com.fromthehorror.client.FromTheHorrorClient"]
-          mod.write_text(json.dumps(data, indent=2) + "\\n")
+          mod.write_text(json.dumps(data, indent=2) + chr(10))
           mixins = root / "src/main/resources/vivian.mixins.json"
           mixin_data = json.loads(mixins.read_text())
           mixin_data["package"] = "com.fromthehorror.mixin"
-          mixins.write_text(json.dumps(mixin_data, indent=2) + "\\n")
+          mixins.write_text(json.dumps(mixin_data, indent=2) + chr(10))
           PY
           python3 ../cori_verify.py
       - name: Set up Gradle

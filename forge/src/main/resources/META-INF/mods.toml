@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="\${mod_id}"
+version="\${mod_version}"
+displayName="\${mod_name}"
+authors="Beadcuber"
+description='''
+Vivian: an intelligent horror companion who follows the player, remembers conversation context, and can transform into a monster.
+'''
+
+[[dependencies.vivian]]
+modId="forge"
+mandatory=true
+versionRange="[\${forge_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.vivian]]
+modId="minecraft"
+mandatory=true
+versionRange="[\${minecraft_version},1.21)"
+ordering="NONE"
+side="BOTH"

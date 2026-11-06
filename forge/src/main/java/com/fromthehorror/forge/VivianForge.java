@@ -62,7 +62,7 @@ public final class VivianForge {
         event.put(VIVIAN_MONSTER.get(), VivianEntity.createAttributes().build());
     }
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS) event.accept(FLASHLIGHT);
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) event.accept(FLASHLIGHT);
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) { event.accept(VIVIAN_EGG); event.accept(MONSTER_EGG); }
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) event.accept(VIVIAN_CARRY);
     }

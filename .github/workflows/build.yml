@@ -24,6 +24,7 @@ on:
       - "vivian_final.py.gz.b64"
       - "decode_vivian_patch.py"
       - "vivian_compile_fix.py"
+      - "vivian_dialogue_upgrade.py"
 
 permissions:
   contents: read
@@ -72,6 +73,7 @@ jobs:
           python3 ../vivian_structures.py
           python3 ../decode_vivian_patch.py ../vivian_final.py.gz.b64 ../vivian_final.py
           python3 ../vivian_final.py
+          python3 ../vivian_dialogue_upgrade.py
           python3 ../vivian_compile_fix.py
           # Fix entrypoints/mixin package names to match the actual Java package paths.
           python3 - <<'PY'

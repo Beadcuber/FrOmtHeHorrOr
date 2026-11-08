@@ -95,6 +95,8 @@ public final class OfflineMind {
         boolean directYou = n.matches(".*\\b(i|we)\\b.*\\b(hate|dislike|despise|detest|loathe|cannot stand)\\b.*\\byou\\b.*")
                 || n.matches(".*\\byou\\b\\s+(are|were|sound|look|act|seem|smell|make)\\b.*")
                 || n.matches(".*\\byou are\\b.*")
+                || n.matches(".*\\byou\\s+(never|always|do not|will not|cannot)\\s+.*")
+                || n.matches(".*\\byou\\s+(ignore|ignored|forgot|forget|lie|lied|cheat|cheated|annoy|annoyed|hurt|betray|betrayed)\\b.*")
                 || n.matches(".*\\byour\\s+(personality|voice|attitude|behavior|existence|company|presence)\\b.*")
                 || n.matches(".*\\b(i do not like|i dislike|i hate)\\s+you\\b.*");
         boolean objectTarget = n.matches(".*\\b(your|the)\\s+[a-z]+\\s+(is|was|looks|sounds|seems)\\b.*")
@@ -103,6 +105,8 @@ public final class OfflineMind {
         if (directed && score < 0) offense=Math.max(offense, Math.min(95, 70 + Math.abs(score)*5));
         if (directed && (n.contains("hate you") || n.contains("despise you") || n.contains("cannot stand you"))) offense=Math.max(offense,100);
         if (directed && n.contains("do not like you")) offense=Math.max(offense,100);
+        if (directed && (n.contains("do not care about me") || n.contains("never listen to me")
+                || n.contains("always ignore me") || n.contains("want me gone"))) offense=Math.max(offense,75);
         if (directed && n.contains("do not hate you")) offense=0;
 
         boolean follow=(t.contains("more") || t.contains("further") || t.contains("elaborate") || t.contains("continue")
